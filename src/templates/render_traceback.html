@@ -1,6 +1,6 @@
 <html>
   <head>
-    <link rel="stylesheet" href="example_failure_page.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{{APPLICATION_ROOT}}/static/css/tracebin.css" type="text/css" media="screen" />
     <script type="text/javascript" src="{{APPLICATION_ROOT}}/static/js/jquery.min.js"></script>
     <script type="text/javascript" src="{{APPLICATION_ROOT}}/static/js/tracebin.js"></script>
   </head>
@@ -10,9 +10,32 @@
   </body>
   <script type="text/javascript">
     $(function() {
-        $.getJSON("{{APPLICATION_ROOT}}/_t/{{traceback_id}}", function(data) {
-            offlinetb_render(data, $("#tb"));
-        });
+        $.ajax(
+            "{{APPLICATION_ROOT}}/_t/{{traceback_id}}",
+            {
+                dataType: "json"
+                ,success : function(data) {
+                    offlinetb_render(data, $("#tb"));
+                }
+                ,error : function(jqXHR, textStatus, errorThrown) {
+                    var div = $('<div class="error"></div>');
+                    if (jqXHR.status == 404) {
+                        div.text("The traceback specified ({{traceback_id}}) does not exist");
+                    }
+                    else if (textStatus == "parsererror") {
+                        var pre = $("<pre></pre>");
+                        pre.text(jqXHR.responseText);
+                        div.text("This traceback does not appear to be a valid json traceback. The raw content is attached");
+                        div.append(pre);
+                    }
+                    else {
+                        div.text(errorThrown)
+                        div.prepend("Error: ");
+                    }
+                    $("body").append(div);
+                }
+            }
+        );
     });
   </script>
 </html>

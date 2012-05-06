@@ -1,3 +1,19 @@
+div.error {
+    border-radius: 0.5em;
+    background: #ffaaaa;
+    background-image: -moz-linear-gradient(#fcc, #f88);
+    background-image: -webkit-linear-gradient(#fcc, #f88);
+    padding: 0.5em;
+    font-size: x-large;
+
+}
+
+div.error pre {
+    background: #ffdfdf;
+    padding: 0.3em;
+    border: 1px dashed black;
+}
+
 .offlinetb-btn {
     background-color: #eee;
     background-image: -moz-linear-gradient(top, #eee, #bbb);

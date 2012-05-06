@@ -23,10 +23,20 @@ def index():
 
 @app.route("/t/<traceback_id>")
 def get_traceback_page(traceback_id):
+    return _render_template('render_traceback.html', traceback_id=traceback_id)
+
+@app.route("/_t/<traceback_id>")
+def get_traceback_json(traceback_id):
     traceback_filename = os.path.join(app.config['DATA_DIR'], traceback_id)
     if not os.path.isfile(traceback_filename):
         abort(404)
-    return _render_template('render_traceback.html', traceback_id=traceback_id)
+    with open(traceback_filename) as f:
+        return _as_json(f.read())
+
+def _as_json(data):
+    response = make_response(data)
+    response.headers["Content-type"] = "application/json"
+    return response
 
 def _render_template(*args, **kwargs):
     return render_template(APPLICATION_ROOT=app.config['APPLICATION_ROOT'], *args, **kwargs)

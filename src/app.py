@@ -71,10 +71,10 @@ main_parser.set_defaults(func=_run_debug_server)
 
 def _run_scgi(args):
     from flup.server.scgi import WSGIServer
-    WSGIServer(app, bindAddress=args.socket_path).run()
+    WSGIServer(app, bindAddress=args.socket).run()
 
 scgi_parser = subparsers.add_parser("scgi", help="Run scgi server")
-scgi_parser.add_argument("socket_path")
+scgi_parser.add_argument("-s", "--socket")
 scgi_parser.set_defaults(func=_run_scgi)
 
 if __name__ == "__main__":

@@ -22,7 +22,7 @@ def index():
         return _upload_traceback()
     return "Upload your traceback here"
 
-@app.route("/<traceback_id>")
+@app.route("/t/<traceback_id>")
 def get_traceback_page(traceback_id):
     return _render_template('render_traceback.html', traceback_id=traceback_id)
 
@@ -45,9 +45,16 @@ def _render_template(*args, **kwargs):
 def _upload_traceback():
     traceback_id = _get_traceback_id()
     with open(os.path.join(app.config['DATA_DIR'], traceback_id), "w") as f:
-        f.write(request.data)
+        f.write(request.input_stream.read(request.headers.get('content-length', type=int) or 0))
     response = make_response()
-    return _as_json(cjson.encode({"id" : traceback_id, "url" : urljoin(request.url, traceback_id)}))
+    return _as_json(cjson.encode({"id" : traceback_id, "url" : _get_url(traceback_id)}))
+
+def _get_url(traceback_id):
+    returned_url = request.url
+    if not returned_url.endswith("/"):
+        returned_url += "/"
+    returned_url += "t/{}".format(traceback_id)
+    return returned_url
 
 def _get_traceback_id():
     data_dir = app.config['DATA_DIR']

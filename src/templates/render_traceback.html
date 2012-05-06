@@ -1,5 +1,18 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html>
+  <head>
+    <link rel="stylesheet" href="example_failure_page.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="{{APPLICATION_ROOT}}/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="{{APPLICATION_ROOT}}/static/js/tracebin.js"></script>
+  </head>
   <body>
-    hello
+    <div id="tb">
+    </div>
   </body>
+  <script type="text/javascript">
+    $(function() {
+        $.getJSON("{{APPLICATION_ROOT}}/_t/{{traceback_id}}", function(data) {
+            offlinetb_render(data, $("#tb"));
+        });
+    });
+  </script>
 </html>

@@ -5,7 +5,6 @@ div.error {
     background-image: -webkit-linear-gradient(#fcc, #f88);
     padding: 0.5em;
     font-size: x-large;
-
 }
 
 div.error pre {

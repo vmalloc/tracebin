@@ -3,6 +3,7 @@ import logging
 import os
 import sys
 import uuid
+from urlparse import urljoin
 
 from flask import (
     Flask,
@@ -21,7 +22,7 @@ def index():
         return _upload_traceback()
     return "Upload your traceback here"
 
-@app.route("/t/<traceback_id>")
+@app.route("/<traceback_id>")
 def get_traceback_page(traceback_id):
     return _render_template('render_traceback.html', traceback_id=traceback_id)
 
@@ -42,12 +43,19 @@ def _render_template(*args, **kwargs):
     return render_template(APPLICATION_ROOT=app.config['APPLICATION_ROOT'], *args, **kwargs)
 
 def _upload_traceback():
-    traceback_id = str(uuid.uuid1()).replace("-", "")
+    traceback_id = _get_traceback_id()
     with open(os.path.join(app.config['DATA_DIR'], traceback_id), "w") as f:
         f.write(request.data)
-    response = make_response(cjson.encode({"id" : traceback_id}))
-    response.headers["Content-type"] = "application/json"
-    return response
+    response = make_response()
+    return _as_json(cjson.encode({"id" : traceback_id, "url" : urljoin(request.url, traceback_id)}))
+
+def _get_traceback_id():
+    data_dir = app.config['DATA_DIR']
+    while True:
+        returned = str(uuid.uuid1()).replace("-", "")
+        if not os.path.exists(os.path.join(data_dir, returned)):
+            return returned
+        # else we try again with a new uuid (highly unlikely but we still must be prepared :-)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--data-dir", default="/tmp")

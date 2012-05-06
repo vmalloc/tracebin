@@ -1,0 +1,38 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Welcome to Tracebin!</title>
+    <link rel="stylesheet" href="{{APPLICATION_ROOT}}/static/css/bootstrap.css" type="text/css" media="screen" />
+<style>
+body {
+margin: 2em;
+}
+</style>
+  </head>
+  <body>
+    <h1>Welcome to Tracebin!</h1>
+<p>
+Tracebin is a small server application that enables you to post and display Python tracebacks for later analysis.
+</p>
+
+<p>
+Posting a traceback to Tracebin is done with the help of <a href="http://github.com/vmalloc/offlinetb">offlinetb</a>. Here is a small code snippet to get you started:
+</p>
+<pre>
+import json
+import urllib2
+import offlinetb
+...
+try:
+   raise Exception("This is what you'd like to report")
+except Exception:
+   response = urllib2.urlopen("{{url}}", json.dumps(offlinetb.distill()))
+</pre>
+<p>
+The server returns JSON data containing, among else, the URL to the traceback that you just posted:
+</p>
+<pre>
+traceback_url = json.loads(response.read())['url']
+</pre>
+
+  </body>
+</html>

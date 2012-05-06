@@ -20,9 +20,9 @@ app = Flask(__name__)
 def index():
     if request.method == 'POST':
         return _upload_traceback()
-    return "Upload your traceback here"
+    return _render_template('index.html', url=request.url)
 
-@app.route("/t/<traceback_id>")
+@app.route("/<traceback_id>")
 def get_traceback_page(traceback_id):
     return _render_template('render_traceback.html', traceback_id=traceback_id)
 
@@ -53,7 +53,7 @@ def _get_url(traceback_id):
     returned_url = request.url
     if not returned_url.endswith("/"):
         returned_url += "/"
-    returned_url += "t/{}".format(traceback_id)
+    returned_url += traceback_id
     return returned_url
 
 def _get_traceback_id():

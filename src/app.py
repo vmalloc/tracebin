@@ -69,12 +69,13 @@ def _run_debug_server(args):
 main_parser = subparsers.add_parser("debug", help="Run debug server")
 main_parser.set_defaults(func=_run_debug_server)
 
-def _run_fcgi(args):
-    from flup.server.fcgi import WSGIServer
-    WSGIServer(app).run()
+def _run_scgi(args):
+    from flup.server.scgi import WSGIServer
+    WSGIServer(app, bindAddress=args.socket_path).run()
 
-fcgi_parser = subparsers.add_parser("fcgi", help="Run fcgi server")
-fcgi_parser.set_defaults(func=_run_fcgi)
+scgi_parser = subparsers.add_parser("scgi", help="Run scgi server")
+scgi_parser.add_argument("socket_path")
+scgi_parser.set_defaults(func=_run_scgi)
 
 if __name__ == "__main__":
     args = parser.parse_args()

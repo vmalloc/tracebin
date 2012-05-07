@@ -24,6 +24,22 @@ Subsequently, when you try to browse the resulting URL with a web browser, you'l
 
 This is particularly useful when deploying in-house solutions which occasionally fail and would like to report the failure details to a centralized location. This small utility enables you to just save the traceback URL and link to it from anywhere you want.
 
+Example Code to Distill and Send Tracebacks
+===========================================
+
+Below is a quick example of how you might use tracebin to save tracebacks::
+
+ import json
+ import urllib2
+ import offlinetb
+ 
+ try:
+    some_function_that_might_raise_exceptions()
+ except Exception:
+    response = urllib2.urlopen("http://your.tracebin.server/", json.dumps(offlinetb.distill()))
+    traceback_url = json.loads(response.read())['url']
+
+
 Installation
 ============
 

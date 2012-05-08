@@ -40,7 +40,13 @@ def _as_json(data):
     return response
 
 def _render_template(*args, **kwargs):
-    return render_template(APPLICATION_ROOT=app.config['APPLICATION_ROOT'], *args, **kwargs)
+    app_root = app.config['APPLICATION_ROOT']
+    ctx = dict(
+        APPLICATION_ROOT=app_root,
+        STATIC_URL=app_root + '/static',
+        )
+    ctx.update(kwargs)
+    return render_template(*args, **ctx)
 
 def _upload_traceback():
     traceback_id = _get_traceback_id()

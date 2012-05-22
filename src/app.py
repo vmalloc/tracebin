@@ -53,13 +53,17 @@ def _upload_traceback():
     with open(os.path.join(app.config['DATA_DIR'], traceback_id), "w") as f:
         f.write(request.input_stream.read(request.headers.get('content-length', type=int) or 0))
     response = make_response()
-    return _as_json(cjson.encode({"id" : traceback_id, "url" : _get_url(traceback_id)}))
+    return _as_json(cjson.encode({"id" : traceback_id, "url" : _get_url(traceback_id), "json_url" : _get_json_url(traceback_id)}))
 
 def _get_url(traceback_id):
+    return _get_url_by_request_url(traceback_id)
+def _get_json_url(traceback_id):
+    return _get_url_by_request_url("_t/" + traceback_id)
+def _get_url_by_request_url(path):
     returned_url = request.url
     if not returned_url.endswith("/"):
         returned_url += "/"
-    returned_url += traceback_id
+    returned_url += path
     return returned_url
 
 def _get_traceback_id():

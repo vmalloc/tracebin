@@ -37,6 +37,8 @@ def get_traceback_json(traceback_id):
 def _as_json(data):
     response = make_response(data)
     response.headers["Content-type"] = "application/json"
+    if app.config["ACCESS_CONTROL_ALLOW_ANY_ORIGIN"]:
+        response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
 def _render_template(*args, **kwargs):
@@ -77,6 +79,7 @@ def _get_traceback_id():
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--data-dir", default="/tmp")
 parser.add_argument("-r", "--app-root", default="")
+parser.add_argument("-a", "--allow-any-origin", action="store_true", default=False)
 subparsers = parser.add_subparsers()
 
 def _run_debug_server(args):
@@ -98,4 +101,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     app.config['DATA_DIR'] = args.data_dir
     app.config['APPLICATION_ROOT'] = args.app_root
+    app.config['ACCESS_CONTROL_ALLOW_ANY_ORIGIN'] = args.allow_any_origin
     sys.exit(args.func(args))

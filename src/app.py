@@ -16,6 +16,10 @@ import cjson
 
 app = Flask(__name__)
 
+from raven.contrib.flask import Sentry
+app.config['SENTRY_DSN'] = None
+sentry = Sentry(app)
+
 @app.route("/", methods=["POST", "GET"])
 def index():
     if request.method == 'POST':
@@ -42,10 +46,9 @@ def _as_json(data):
     return response
 
 def _render_template(*args, **kwargs):
-    app_root = app.config['APPLICATION_ROOT']
     ctx = dict(
-        APPLICATION_ROOT=app_root,
-        STATIC_URL=app_root + '/static',
+        STATIC_URL='/static',
+        request = request,
         )
     ctx.update(kwargs)
     return render_template(*args, **ctx)
@@ -77,9 +80,6 @@ def _get_traceback_id():
         # else we try again with a new uuid (highly unlikely but we still must be prepared :-)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-d", "--data-dir", default="/tmp")
-parser.add_argument("-r", "--app-root", default="")
-parser.add_argument("-a", "--allow-any-origin", action="store_true", default=False)
 subparsers = parser.add_subparsers()
 
 def _run_debug_server(args):
@@ -97,9 +97,9 @@ scgi_parser = subparsers.add_parser("scgi", help="Run scgi server")
 scgi_parser.add_argument("-s", "--socket")
 scgi_parser.set_defaults(func=_run_scgi)
 
+app.config['DATA_DIR'] = "/var/www/tracebacks"
+app.config["ACCESS_CONTROL_ALLOW_ANY_ORIGIN"] = True
+
 if __name__ == "__main__":
     args = parser.parse_args()
-    app.config['DATA_DIR'] = args.data_dir
-    app.config['APPLICATION_ROOT'] = args.app_root
-    app.config['ACCESS_CONTROL_ALLOW_ANY_ORIGIN'] = args.allow_any_origin
     sys.exit(args.func(args))

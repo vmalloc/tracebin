@@ -1,9 +1,9 @@
 <html>
   <head>
-    <link rel="stylesheet" href="{{APPLICATION_ROOT}}/static/css/tracebin.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/css/tracebin.css" type="text/css" media="screen" />
     {% include "favicon.html" %}
-    <script type="text/javascript" src="{{APPLICATION_ROOT}}/static/js/jquery.min.js"></script>
-    <script type="text/javascript" src="{{APPLICATION_ROOT}}/static/js/tracebin.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/tracebin.js"></script>
   </head>
   <body>
     <div id="tb">
@@ -12,7 +12,7 @@
   <script type="text/javascript">
     $(function() {
         $.ajax(
-            "{{APPLICATION_ROOT}}/_t/{{traceback_id}}",
+            "/_t/{{traceback_id}}",
             {
                 dataType: "json"
                 ,success : function(data) {

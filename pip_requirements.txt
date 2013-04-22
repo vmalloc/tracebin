@@ -1,3 +1,5 @@
+blinker
 flask
 flup
 python-cjson
+raven

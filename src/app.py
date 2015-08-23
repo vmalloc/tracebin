@@ -3,6 +3,7 @@ import logging
 import os
 import sys
 import uuid
+import gzip
 from urlparse import urljoin
 
 from flask import (
@@ -33,10 +34,14 @@ def get_traceback_page(traceback_id):
 @app.route("/_t/<traceback_id>")
 def get_traceback_json(traceback_id):
     traceback_filename = os.path.join(app.config['DATA_DIR'], traceback_id)
-    if not os.path.isfile(traceback_filename):
-        abort(404)
-    with open(traceback_filename) as f:
-        return _as_json(f.read())
+    if os.path.isfile(traceback_filename):
+        with open(traceback_filename) as f:
+            return _as_json(f.read())
+    traceback_filename += '.gz'
+    if os.path.isfile(traceback_filename):
+        with gzip.open(traceback_filename, "rb") as f:
+            return _as_json(f.read())
+    abort(404)
 
 def _as_json(data):
     response = make_response(data)
@@ -55,7 +60,7 @@ def _render_template(*args, **kwargs):
 
 def _upload_traceback():
     traceback_id = _get_traceback_id()
-    with open(os.path.join(app.config['DATA_DIR'], traceback_id), "w") as f:
+    with gzip.open(os.path.join(app.config['DATA_DIR'], traceback_id + '.gz'), "wb") as f:
         f.write(request.input_stream.read(request.headers.get('content-length', type=int) or 0))
     response = make_response()
     return _as_json(cjson.encode({"id" : traceback_id, "url" : _get_url(traceback_id), "json_url" : _get_json_url(traceback_id)}))
